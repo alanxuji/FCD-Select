@@ -1,4 +1,28 @@
 import numpy as np
+import collections
+
+
+def GetSublt(Pa, AL, Pnode):
+    queue = collections.deque()
+    queue.append(Pnode)
+
+    while len(queue) != 0:
+        Node = queue.popleft()
+        indes = [i for i, x in enumerate(Pa) if x == Node]
+
+        for ind in indes:
+            AL = np.append(AL, ind)
+            queue.append(ind)
+    return AL
+
+
+def EuclidianDist2(X1, X2):
+    ###Using broadcasting, simpler and faster!
+    tempM = np.sum(X1 ** 2, 1, dtype='float32').reshape(-1, 1)  ##行数不知道，只知道列数为1
+    tempN = np.sum(X2 ** 2, 1, dtype='float32')  # X2 ** 2: element-wise square, sum(_,1): 沿行方向相加，但最后是得到行向量
+    sqdist = tempM + tempN - 2 * np.dot(X1, X2.T).astype('float32')
+    sqdist[sqdist < 0] = 0
+    return np.sqrt(sqdist)
 
 
 class LeadingTree:
@@ -11,7 +35,7 @@ class LeadingTree:
         self.dc = dc
         self.lt_num = lt_num
         self.D = D  # Calculate the distance matrix D
-        # print(f'The data type of the distance matrix D is {self.D.dtype}')
+        # print(f'距离矩阵D的数据类型为{self.D.dtype}')
         self.density = None
         self.Pa = None
         self.delta = None
@@ -35,7 +59,8 @@ class LeadingTree:
         self.density = np.sum(tempMat, 1, dtype='float32') - 1
         self.Q = np.argsort(self.density)[::-1]
 
-        # print(f'The data type of density is {self.density.dtype}\n'  #       f'The data type of Q is {self.Q.dtype}')
+        # print(f'density的数据类型为{self.density.dtype}\n'
+        #       f'Q的数据类型为{self.Q.dtype}')
 
     def ComputeParentNode(self, D, Q):
         """
@@ -59,7 +84,7 @@ class LeadingTree:
                 self.delta[Q[i]] = min(D_A)
                 self.Pa[Q[i]] = greaterInds[np.argmin(D_A)]
 
-        # print(f'The data type of delta is {self.delta.dtype}')
+        # print(f'delta的数据类型为{self.delta.dtype}')
 
     def ProCenter(self, density, delta, Pa):
         """
@@ -73,7 +98,7 @@ class LeadingTree:
         """
         self.gamma = density * delta
         self.gamma_D = np.argsort(self.gamma)[::-1]
-        # print(f'The data type of gamma is {self.gamma.dtype}')
+        # print(f'gamma的数据类型为{self.gamma.dtype}')
         # Disconnect the Leading Tree
         for i in range(self.lt_num):
             Pa[self.gamma_D[i]] = -1
@@ -118,9 +143,12 @@ class LeadingTree:
         self.edges = edgesO[ind,]
 
     def fit(self):
+        print("computing local density...")
         self.ComputeLocalDensity(self.D, self.dc)
+        print("computing leading nodes...")
         self.ComputeParentNode(self.D, self.Q)
         self.ProCenter(self.density, self.delta, self.Pa)
+        print("Split the tree...")
         self.GetSubtreeR(self.gamma_D, self.lt_num, self.Q, self.Pa)
         self.Edges(self.Pa)
         self.layer = self.layer + 1
