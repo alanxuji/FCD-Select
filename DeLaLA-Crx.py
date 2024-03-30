@@ -5,7 +5,7 @@ from collections import Counter
 import numpy as np
 
 from core import leading_tree as lt, lmca as lm
-from DeLaLA.delala_select2 import DeLaLA_select
+from core.delala_select import DeLaLA_select
 from utils import common
 
 if __name__ == "__main__":

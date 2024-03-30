@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 import core.leading_tree as lt
 import core.lmca as lm
-from DeLaLA.delala_select2 import DeLaLA_select
+from core.delala_select import DeLaLA_select
 from utils import common
 
 

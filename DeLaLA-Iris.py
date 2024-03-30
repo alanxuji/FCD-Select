@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from sklearn import datasets
 
 from core import leading_tree as lt, lmca as lm
-from DeLaLA.delala_select2 import Fuzzy_select
+from core.delala_select import Fuzzy_select
 from utils import common
 
 if __name__ == "__main__":

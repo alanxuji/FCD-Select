@@ -3,7 +3,7 @@ from collections import Counter
 
 import numpy as np
 from core import leading_tree as lt, lmca as lm
-from DeLaLA.delala_select2 import DeLaLA_select
+from core.delala_select import DeLaLA_select
 from sklearn.preprocessing import Normalizer
 import time
 import scipy.io as scio
