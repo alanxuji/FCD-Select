@@ -84,7 +84,11 @@ def Fuzzy_select(gamma, rho, layer, Y, k, l, rootWeight):
     """
     N = len(Y)
     psi = np.zeros(N, dtype=float)
+    SMALLValue = 1e-8
     ###revised, reversion
+    for i in range(N):
+        if rho[i] <SMALLValue:
+            rho[i] = SMALLValue
     np.divide(layer, rho,  psi)
     psi = np.log(psi)
     ### added log
@@ -102,7 +106,7 @@ def Fuzzy_select(gamma, rho, layer, Y, k, l, rootWeight):
     p = l - C * k  ## number of global selection
     globalSelected = np.zeros(p, dtype=int) - 1
     #gamma = (gamma - min(gamma)) / (max(gamma) - min(gamma))
-    SMALLValue = 0.00001
+
     hgamma = np.zeros(N, dtype=float)
     for i in range(N):
         if gamma[i] < 1E-5:
@@ -154,9 +158,6 @@ def SortSmallXOR2(a, b, rootWeight=0.5):
     :return: the indics of an array, first elements are small in a or small in b.
     '''
 
-    ###select via XOR. min-max normalization failed
-    # a = (a - np.mean(a)) / np.std(a)
-    # b = (b - np.mean(b)) / np.std(b)
 
     normalA = (a - min(a)) / (max(a) - min(a))
     normalB = (b - min(b)) / (max(b) - min(b))

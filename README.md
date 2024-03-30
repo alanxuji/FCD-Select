@@ -1,3 +1,3 @@
-# FCD-Select
-Experiment code for  "Selecting Central and Divergent Samples via Leading Tree Metric Space for Semisupervised Learning".
-NOTE: Please move the folders "data", "core", and "utils" into the folder "DeLaLA". Sorry for the misplace!
+# DeLaLA
+code for "Semi-supervised Learning with Deterministic Labeling and Large Margin Projection" 
+We offer one-click-run files for four datasets, run DeLaLA-DatasetName.py. If you have any problem with running the codes, feel free to contact us via Email on the arXiv paper.
