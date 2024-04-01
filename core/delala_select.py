@@ -70,7 +70,7 @@ def DeLaLA_select(gamma, rho, layer, Y, k, l, rootWeight):
     result = np.append(LabeledPerClass.flatten(), globalSelected)
     return result
 
-def Fuzzy_select(gamma, rho, layer, Y, k, l, rootWeight):
+def Fuzzy_select_old(gamma, rho, layer, Y, k, l, rootWeight):
     """
     select the samples to label according to Objective Function
     :param gamma: center potential
@@ -199,4 +199,62 @@ def SortSmallXOR(a, b, rootWeight=0.5):
     # ysort = np.sort(y)
     # print('ysort:',ysort)
     result = inds[::-1] ###revised
+    return result
+
+def find_all_occurrences(arr, target):
+    return [i for i, val in enumerate(arr) if val == target]
+
+def Fuzzy_select(gamma, rho, layer, Y, k, l, rootWeight):
+    """
+    select the samples to label according to Objective Function
+    :param gamma: center potential
+    :param rho: local density
+    :param layer: layer index of each sample
+    :param alhpa: parameter of the divergence item
+    :param Y: labels
+    :param k: k for LMCA
+    :param l: given number of samples to be labeled
+    :return: labeled samples Indics
+    """
+    N = len(Y)
+    psi = np.zeros(N, dtype=float)
+    SMALLValue = 1e-8
+    ###revised, reversion
+    for i in range(N):
+        if rho[i] <SMALLValue:
+            rho[i] = SMALLValue
+    np.divide(layer, rho,  psi)
+    psi = np.log(psi)
+    ### added log
+
+    C = len(np.unique(Y))
+    label_unique = np.unique(Y)
+
+    y = [x for x in Y]
+
+    for i in range(len(y)):
+        for j in range(C):
+            if y[i] == label_unique[j]:
+                y[i] = j
+    LabeledPerClass = np.zeros((C, k), dtype=int) - 1
+    p = l - C * k  ## number of global selection
+    globalSelected = np.zeros(p, dtype=int) - 1
+
+    for i in range(N):
+        if gamma[i] < 1E-5:
+            gamma[i] = SMALLValue
+
+    hgamma = np.log(gamma)
+    sortedInds = SortSmallXOR2(hgamma, psi, rootWeight)
+    sortedY = Y[sortedInds]
+    for cl in y:
+
+        clInds = find_all_occurrences(sortedY, cl)
+        LabeledPerClass[cl,:] = sortedInds[clInds[:k]] ###this is important!!
+    ClassSamples =  LabeledPerClass.flatten()
+    NewSortedInds = [elment for elment in sortedInds if elment not in ClassSamples]
+    if p>0:
+        globalSelected = NewSortedInds[:p]
+
+    result = np.append(ClassSamples, globalSelected)
     return result
